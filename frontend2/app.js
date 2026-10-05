@@ -38,7 +38,7 @@ const telemetry = {
     },
     {
       title: 'Cooling fan activated',
-      detail: 'Fan started automatically at 36Â°C.',
+      detail: 'Fan started automatically at 36°C.',
       time: '8 min ago',
       severity: 'info',
       ack: false
@@ -113,85 +113,85 @@ const titles = {
   alerts: 'Alerts & events',
   system: 'Device & system'
 };
-const footer = '<footer class="page-footer"><span>EV GUARDIAN AI <i>Â·</i> SMART PREDICTIVE BMS</span><span><i class="footer-live"></i> DEMO DATA <i>Â·</i> UI PREVIEW</span></footer>';
+const footer = '<footer class="page-footer"><span>EV GUARDIAN AI <i>·</i> SMART PREDICTIVE BMS</span><span><i class="footer-live"></i> DEMO DATA <i>·</i> UI PREVIEW</span></footer>';
 const heading = (eyebrow, title, text)=>`<div class="page-heading detail-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${text}</p></div></div>`;
 const metric = (icon, label, value, unit, note, color = '')=>`<article class="metric-card"><div class="metric-icon ${color}">${icon}</div><div class="metric-label">${label}</div><div class="metric-value">${value}<small>${unit}</small></div><div class="metric-note">${note}</div></article>`;
-const alertsList = (items)=>`<div class="alerts-list">${items.map(a=>`<div class="alert-row"><div class="alert-icon ${a.severity}">${a.severity==='warning'?'âš ': 'i'}</div><div class="alert-copy"><b>${a.title}</b><span>${a.detail}</span></div><time>${a.time}</time>${a.ack?'<span class="ack-check">âœ“</span>': ''}</div>`).join('')}</div>`;
+const alertsList = (items)=>`<div class="alerts-list">${items.map(a=>`<div class="alert-row"><div class="alert-icon ${a.severity}">${a.severity==='warning'?'⚠': 'i'}</div><div class="alert-copy"><b>${a.title}</b><span>${a.detail}</span></div><time>${a.time}</time>${a.ack?'<span class="ack-check">✓</span>': ''}</div>`).join('')}</div>`;
 const legend = `<div class="chart-legend"><span><i class="legend-observed"></i>Observed</span><span><i class="legend-predicted"></i>Model projection</span><span class="legend-limit"><i></i>Safe limit</span></div>`;
 const chart = `<div class="chart-wrap"><canvas id="temperature-chart" aria-label="Observed and projected pack temperature chart"></canvas><div class="chart-tooltip" hidden></div></div>`;
 function dashboard() {
-  return `<div class="page-heading"><div><div class="eyebrow">OVERVIEW <span>Â·</span> PACK MONITORING</div><h1>Good morning, Alex <span class="wave">âœ³</span></h1><p>Hereâ€™s the latest from your battery system.</p></div><button class="outline-button" data-go="thermal">â™¨ &nbsp;View thermal analysis</button></div>
-<section class="hero-card"><div class="hero-copy"><div class="hero-kicker"><span class="pulse-dot"></span> SYSTEM OPERATIONAL</div><h2>Your battery is<br>performing <span>normally.</span></h2><p>Monitoring pack health and thermal behavior in real time.</p><div class="hero-meta"><div><span>PACK CONFIGURATION</span><b>1S4P <i>Â·</i> Li-ion</b></div><div><span>DEVICE STATUS</span><b><i class="green-dot"></i>Connected</b></div></div></div><div class="battery-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="battery-glow"></div><div class="battery-body"><div class="battery-cap"></div><div class="battery-cell c1"></div><div class="battery-cell c2"></div><div class="battery-cell c3"></div><div class="battery-cell c4"></div><div class="battery-lightning">ÏŸ</div></div><div class="battery-label">PACK SOC <b>${telemetry.soc}%</b></div></div><div class="hero-status"><div class="status-ring">â™¨</div><div><b>Thermal watch</b><span>Trend is being monitored</span></div><span>Â·Â·Â·</span></div></section>
-<section class="metric-grid">${metric('â–£',
+  return `<div class="page-heading"><div><div class="eyebrow">OVERVIEW <span>·</span> PACK MONITORING</div><h1>Good morning, Alex <span class="wave">✳</span></h1><p>Here’s the latest from your battery system.</p></div><div class="greeting-model"><model-viewer src="assets/tesla-model-s.glb" alt="Interactive 3D model of a Tesla Model S" camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="5deg" camera-orbit="90deg 70deg 5.5m" loading="eager" interaction-prompt="none" shadow-intensity="0.7"></model-viewer></div><button class="outline-button" data-go="thermal">♨ &nbsp;View thermal analysis</button></div>
+<section class="hero-card"><div class="hero-copy"><div class="hero-kicker"><span class="pulse-dot"></span> SYSTEM OPERATIONAL</div><h2>Your battery is<br>performing <span>normally.</span></h2><p>Monitoring pack health and thermal behavior in real time.</p><div class="hero-meta"><div><span>PACK CONFIGURATION</span><b>1S4P <i>·</i> Li-ion</b></div><div><span>DEVICE STATUS</span><b><i class="green-dot"></i>Connected</b></div></div></div><div class="battery-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="battery-glow"></div><div class="battery-body"><div class="battery-cap"></div><div class="battery-cell c1"></div><div class="battery-cell c2"></div><div class="battery-cell c3"></div><div class="battery-cell c4"></div><div class="battery-lightning">ϟ</div></div><div class="battery-label">PACK SOC <b>${telemetry.soc}%</b></div></div><div class="hero-status"><div class="status-ring">♨</div><div><b>Thermal watch</b><span>Trend is being monitored</span></div><span>···</span></div></section>
+<section class="metric-grid">${metric('–£',
   'State of charge',
   telemetry.soc,
   '%',
-  'Estimated remaining capacity')}${metric('ÏŸ',
+  'Estimated remaining capacity')}${metric('ϟ',
   'Pack voltage',
   telemetry.voltage.toFixed(2),
   'V',
   'Nominal 1S Li-ion range',
-  'blue')}${metric('â†˜',
+  'blue')}${metric('↘',
   'Current draw',
   telemetry.current.toFixed(1),
   'A',
-  'Discharging Â· steady load',
-  'amber')}${metric('â—‰',
+  'Discharging · steady load',
+  'amber')}${metric('◉',
   'Power output',
   telemetry.power.toFixed(1),
   'W',
-  'Voltage Ã— current',
+  'Voltage × current',
   'violet')}</section>
-<div class="content-grid"><section class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Thermal behavior</div><div class="panel-subtitle">Observed temperature and near-term projection</div></div><button class="period-select">Last 90 minã€€âŒ„</button></div>${legend}${chart}<div class="chart-footer"><div><small>CURRENT PACK TEMP</small><b>${telemetry.temperature.toFixed(1)}<i>Â°C</i> <span class="trend-up">â†— +1.8Â°</span></b></div><div class="chart-callout">â—· &nbsp;At current trend, threshold in <b>~${telemetry.minutes} min</b></div></div></section>
-<section class="panel cell-panel"><div class="panel-header"><div><div class="panel-title">Cell temperatures</div><div class="panel-subtitle">4 sensors Â· 1S4P pack</div></div><button class="dots">Â·Â·Â·</button></div><div class="cell-visual"><div class="cell-pack">${telemetry.cells.map((c,
+<div class="content-grid"><section class="panel chart-panel"><div class="panel-header"><div><div class="panel-title">Thermal behavior</div><div class="panel-subtitle">Observed temperature and near-term projection</div></div><button class="period-select">Last 90 min ⌄</button></div>${legend}${chart}<div class="chart-footer"><div><small>CURRENT PACK TEMP</small><b>${telemetry.temperature.toFixed(1)}<i>°C</i> <span class="trend-up">↗ +1.8°</span></b></div><div class="chart-callout">◷ &nbsp;At current trend, threshold in <b>~${telemetry.minutes} min</b></div></div></section>
+<section class="panel cell-panel"><div class="panel-header"><div><div class="panel-title">Cell temperatures</div><div class="panel-subtitle">4 sensors · 1S4P pack</div></div><button class="dots">···</button></div><div class="cell-visual"><div class="cell-pack">${telemetry.cells.map((c,
   i)=>`<div class="cell-bar ${c.status}"><div class="cell-fill" style="height:${Math.max(20,
   (c.temp-20)*2.9)}%"></div><span>${String(i+1).padStart(2,
-  '0')}</span></div>`).join('')}</div><div class="cell-scale"><span>COOL</span><span>WARM</span></div></div><div class="cell-list">${telemetry.cells.map(c=>`<div class="cell-row"><span><i class="cell-status ${c.status}"></i>${c.name}</span><b>${c.temp.toFixed(1)}Â°<small>C</small></b></div>`).join('')}</div><div class="cell-foot"><span>Cell delta</span><b>0.7Â°C <small>within range</small></b></div></section></div>
-<div class="bottom-grid"><section class="panel risk-panel"><div class="panel-title">Thermal risk assessment</div><div class="risk-body"><div class="risk-meter"><div class="risk-meter-center"><b>LOW</b><span>RISK</span></div></div><div class="risk-copy"><span class="risk-tag">â— WATCHING</span><h3>Stable, with a rising trend</h3><p>Current conditions are within the operating range. Keep monitoring as temperature climbs.</p><button class="text-link" data-go="thermal">Explore thermal insights â†—</button></div></div><div class="risk-scale"><span>LOW RISK</span><div><i></i></div><span>HIGH RISK</span></div></section><section class="panel cooling-panel"><div class="panel-header"><div><div class="panel-title">Cooling system</div><div class="panel-subtitle">Automatic thermal response</div></div><span class="active-label">â— ACTIVE</span></div><div class="fan-row"><div class="fan-icon">âœ¥</div><div><b>Cooling fan</b><span>Responding to temperature</span></div><strong>${telemetry.fan}<small>%</small></strong></div><div class="fan-track"><i style="width:${telemetry.fan}%"></i></div><div class="cooling-foot"><span>Current speed</span><b>${telemetry.fan}% PWM</b></div></section></div>
-<div class="bottom-grid last-row"><section class="panel"><div class="panel-header"><div><div class="panel-title">Recent alerts</div><div class="panel-subtitle">Latest events from this device</div></div><button class="text-link" data-go="alerts">View all â†—</button></div>${alertsList(telemetry.alerts.slice(0,
+  '0')}</span></div>`).join('')}</div><div class="cell-scale"><span>COOL</span><span>WARM</span></div></div><div class="cell-list">${telemetry.cells.map(c=>`<div class="cell-row"><span><i class="cell-status ${c.status}"></i>${c.name}</span><b>${c.temp.toFixed(1)}°<small>C</small></b></div>`).join('')}</div><div class="cell-foot"><span>Cell delta</span><b>0.7°C <small>within range</small></b></div></section></div>
+<div class="bottom-grid"><section class="panel risk-panel"><div class="panel-title">Thermal risk assessment</div><div class="risk-body"><div class="risk-meter"><div class="risk-meter-center"><b>LOW</b><span>RISK</span></div></div><div class="risk-copy"><span class="risk-tag">● WATCHING</span><h3>Stable, with a rising trend</h3><p>Current conditions are within the operating range. Keep monitoring as temperature climbs.</p><button class="text-link" data-go="thermal">Explore thermal insights ↗</button></div></div><div class="risk-scale"><span>LOW RISK</span><div><i></i></div><span>HIGH RISK</span></div></section><section class="panel cooling-panel"><div class="panel-header"><div><div class="panel-title">Cooling system</div><div class="panel-subtitle">Automatic thermal response</div></div><span class="active-label">● ACTIVE</span></div><div class="fan-row"><div class="fan-icon">✥</div><div><b>Cooling fan</b><span>Responding to temperature</span></div><strong>${telemetry.fan}<small>%</small></strong></div><div class="fan-track"><i style="width:${telemetry.fan}%"></i></div><div class="cooling-foot"><span>Current speed</span><b>${telemetry.fan}% PWM</b></div></section></div>
+<div class="bottom-grid last-row"><section class="panel"><div class="panel-header"><div><div class="panel-title">Recent alerts</div><div class="panel-subtitle">Latest events from this device</div></div><button class="text-link" data-go="alerts">View all ↗</button></div>${alertsList(telemetry.alerts.slice(0,
   2))}</section><section class="panel condition-panel"><div class="panel-title">System condition</div><div class="condition-line"><span><i></i> ESP32 controller</span><b>Online</b></div><div class="condition-line"><span><i></i> Sensors</span><b>4 / 4 active</b></div><div class="condition-line"><span><i></i> Data link</span><b>Stable</b></div></section></div>`;
 }
 
 function detail(page) {
   if(page==='health')return `${heading('BATTERY INTELLIGENCE',
   'Battery health',
-  'Track pack capacity, electrical behavior, and cell consistency.')}<div class="metric-grid">${metric('â–£',
+  'Track pack capacity, electrical behavior, and cell consistency.')}<div class="metric-grid">${metric('–£',
   'State of charge',
   telemetry.soc,
   '%',
-  'Estimated remaining capacity')}${metric('â–¤',
+  'Estimated remaining capacity')}${metric('–¤',
   'State of health',
   telemetry.soh,
   '%',
-  'Model estimate Â· demo value',
-  'blue')}${metric('ÏŸ',
+  'Model estimate · demo value',
+  'blue')}${metric('ϟ',
   'Pack voltage',
   telemetry.voltage.toFixed(2),
   'V',
   '1S Li-ion pack',
-  'amber')}${metric('â—‰',
+  'amber')}${metric('◉',
   'Power output',
   telemetry.power.toFixed(1),
   'W',
   'Live operating point',
-  'violet')}</div><div class="detail-cols"><section class="panel health-score"><div class="panel-title">Pack health score</div><div class="health-number">${telemetry.soh}<small>%</small></div><div class="health-status">âœ“ Excellent condition</div><div class="health-meter"><i style="width:${telemetry.soh}%"></i></div><p>State of health is a demo estimate. Replace with a validated estimator when the model is ready.</p></section><section class="panel"><div class="panel-title">Cell balance</div><div class="panel-subtitle">Temperature spread across four sensors</div>${telemetry.cells.map(c=>`<div class="balance-row"><span>${c.name}</span><div class="balance-track"><i style="width:${((c.temp-30)/12)*100}%"></i></div><b>${c.temp.toFixed(1)}Â°C</b><span class="ok-chip">${c.status==='watch'?'Watch': 'Balanced'}</span></div>`).join('')}</section></div>`;
+  'violet')}</div><div class="detail-cols"><section class="panel health-score"><div class="panel-title">Pack health score</div><div class="health-number">${telemetry.soh}<small>%</small></div><div class="health-status">✓ Excellent condition</div><div class="health-meter"><i style="width:${telemetry.soh}%"></i></div><p>State of health is a demo estimate. Replace with a validated estimator when the model is ready.</p></section><section class="panel"><div class="panel-title">Cell balance</div><div class="panel-subtitle">Temperature spread across four sensors</div>${telemetry.cells.map(c=>`<div class="balance-row"><span>${c.name}</span><div class="balance-track"><i style="width:${((c.temp-30)/12)*100}%"></i></div><b>${c.temp.toFixed(1)}°C</b><span class="ok-chip">${c.status==='watch'?'Watch': 'Balanced'}</span></div>`).join('')}</section></div>`;
   if(page==='thermal')return `${heading('PREDICTIVE SAFETY',
   'Thermal analysis',
-  'Review cell temperatures and the illustrative near-term projection.')}<section class="panel thermal-summary"><div class="thermal-summary-item"><span>PACK TEMPERATURE</span><b>${telemetry.temperature.toFixed(1)}Â°<small>C</small></b><i>â†— +1.8Â°C over 20 min</i></div><div class="thermal-summary-item"><span>RISK CLASSIFICATION</span><b class="watch-text">Watch</b><i>Trend under observation</i></div><div class="thermal-summary-item"><span>TIME TO ${telemetry.threshold}Â°C THRESHOLD</span><b>~${telemetry.minutes}<small> min</small></b><i>Illustrative trend estimate</i></div></section><section class="panel thermal-chart-panel"><div class="panel-header"><div><div class="panel-title">Temperature trend &amp; projection</div><div class="panel-subtitle">Observed sensor values with a mock forward projection</div></div><span class="demo-badge">DEMO MODEL</span></div>${legend}${chart}</section><section class="panel cells-wide"><div class="panel-title">Sensor-by-sensor readings</div><div class="wide-cell-grid">${telemetry.cells.map(c=>`<div class="wide-cell"><div>â™¨ <span>${c.name}</span></div><b>${c.temp.toFixed(1)}Â°<small>C</small></b><span class="status-word ${c.status}">${c.status==='watch'?'Elevated': 'Normal range'}</span></div>`).join('')}</div></section>`;
+  'Review cell temperatures and the illustrative near-term projection.')}<section class="panel thermal-summary"><div class="thermal-summary-item"><span>PACK TEMPERATURE</span><b>${telemetry.temperature.toFixed(1)}°<small>C</small></b><i>↗ +1.8°C over 20 min</i></div><div class="thermal-summary-item"><span>RISK CLASSIFICATION</span><b class="watch-text">Watch</b><i>Trend under observation</i></div><div class="thermal-summary-item"><span>TIME TO ${telemetry.threshold}°C THRESHOLD</span><b>~${telemetry.minutes}<small> min</small></b><i>Illustrative trend estimate</i></div></section><section class="panel thermal-chart-panel"><div class="panel-header"><div><div class="panel-title">Temperature trend &amp; projection</div><div class="panel-subtitle">Observed sensor values with a mock forward projection</div></div><span class="demo-badge">DEMO MODEL</span></div>${legend}${chart}</section><section class="panel cells-wide"><div class="panel-title">Sensor-by-sensor readings</div><div class="wide-cell-grid">${telemetry.cells.map(c=>`<div class="wide-cell"><div>♨ <span>${c.name}</span></div><b>${c.temp.toFixed(1)}°<small>C</small></b><span class="status-word ${c.status}">${c.status==='watch'?'Elevated': 'Normal range'}</span></div>`).join('')}</div></section>`;
   if(page==='alerts')return `${heading('EVENT CENTER',
   'Alerts & events',
-  'Review system notices and monitoring events.')}<section class="alert-overview"><div><b>2</b><span>Needs attention</span></div><div><b>${telemetry.alerts.length}</b><span>Total recent events</span></div><div><b>All systems</b><span>Connected now</span></div></section><section class="panel alerts-page-panel"><div class="panel-header"><div><div class="panel-title">Recent activity</div><div class="panel-subtitle">Newest first Â· local demo timeline</div></div><span class="demo-badge">MOCK EVENTS</span></div>${alertsList(telemetry.alerts)}</section><div class="inline-note">âœ“ &nbsp;Alerts shown here are sample UI data. Real acknowledgement and alert history will come from the backend.</div>`;
+  'Review system notices and monitoring events.')}<section class="alert-overview"><div><b>2</b><span>Needs attention</span></div><div><b>${telemetry.alerts.length}</b><span>Total recent events</span></div><div><b>All systems</b><span>Connected now</span></div></section><section class="panel alerts-page-panel"><div class="panel-header"><div><div class="panel-title">Recent activity</div><div class="panel-subtitle">Newest first · local demo timeline</div></div><span class="demo-badge">MOCK EVENTS</span></div>${alertsList(telemetry.alerts)}</section><div class="inline-note">✓ &nbsp;Alerts shown here are sample UI data. Real acknowledgement and alert history will come from the backend.</div>`;
   return `${heading('HARDWARE & CONNECTIONS',
   'Device & system',
-  'Check controller connectivity, sensor health, and cooling response.')}<section class="panel device-banner"><div class="device-avatar">âŒ˜</div><div class="device-main"><div class="device-online">â— ONLINE</div><h2>EV Guardian Â· Lab Unit 01</h2><p>ESP32-BMS-001 <span>Â·</span> Firmware v0.8.2 Â· prototype</p></div><div class="device-seen"><span>LAST TELEMETRY</span><b>Just now</b><small>Demo status</small></div></section><div class="detail-cols"><section class="panel device-details"><div class="panel-header"><div><div class="panel-title">Sensor connectivity</div><div class="panel-subtitle">Reported by the prototype controller</div></div><span class="active-label">â— 4 / 4</span></div>${[['Voltage sensor',
+  'Check controller connectivity, sensor health, and cooling response.')}<section class="panel device-banner"><div class="device-avatar">⌘</div><div class="device-main"><div class="device-online">● ONLINE</div><h2>EV Guardian · Lab Unit 01</h2><p>ESP32-BMS-001 <span>·</span> Firmware v0.8.2 · prototype</p></div><div class="device-seen"><span>LAST TELEMETRY</span><b>Just now</b><small>Demo status</small></div></section><div class="detail-cols"><section class="panel device-details"><div class="panel-header"><div><div class="panel-title">Sensor connectivity</div><div class="panel-subtitle">Reported by the prototype controller</div></div><span class="active-label">● 4 / 4</span></div>${[['Voltage sensor',
       '3.86 V'],
       ['Current sensor',
       '4.20 A'],
       ['Temperature probes',
       '4 / 4 active'],
       ['Wi-Fi link',
-      'âˆ’54 dBm']].map(([n,
-    v])=>`<div class="sensor-row"><div class="sensor-icon">âŒ</div><div><b>${n}</b><span>${v}</span></div><span class="sensor-state">â— Connected</span></div>`).join('')}</section><section class="panel cooling-panel device-cooling"><div class="panel-title">Cooling response</div><div class="panel-subtitle">Fan controller output</div><div class="fan-row"><div class="fan-icon">âœ¥</div><div><b>Cooling fan</b><span>Active Â· automatic mode</span></div><strong>${telemetry.fan}<small>%</small></strong></div><div class="fan-track"><i style="width:${telemetry.fan}%"></i></div><div class="cooling-foot"><span>Output level</span><b>${telemetry.fan}% PWM</b></div></section></div><div class="inline-note">âŒ &nbsp;Device and sensor states are currently illustrative mock data.</div>`;
+      '−54 dBm']].map(([n,
+    v])=>`<div class="sensor-row"><div class="sensor-icon">⌁</div><div><b>${n}</b><span>${v}</span></div><span class="sensor-state">● Connected</span></div>`).join('')}</section><section class="panel cooling-panel device-cooling"><div class="panel-title">Cooling response</div><div class="panel-subtitle">Fan controller output</div><div class="fan-row"><div class="fan-icon">✥</div><div><b>Cooling fan</b><span>Active · automatic mode</span></div><strong>${telemetry.fan}<small>%</small></strong></div><div class="fan-track"><i style="width:${telemetry.fan}%"></i></div><div class="cooling-foot"><span>Output level</span><b>${telemetry.fan}% PWM</b></div></section></div><div class="inline-note">⌁ &nbsp;Device and sensor states are currently illustrative mock data.</div>`;
 }
 
 let currentPage = 'dashboard';
@@ -229,7 +229,7 @@ function paintChart() {
     y);
     c.stroke();
     c.fillStyle = '#78878b';
-    c.fillText(`${v}Â°`,
+    c.fillText(`${v}°`,
     2,
     y+3)
   }
@@ -328,7 +328,7 @@ function drawChart() {
       4,
       0,
       Math.PI*2); ctx.fillStyle = row.color; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#10171d'; ctx.stroke()
-    }); ctx.restore(); tooltip.innerHTML = `<b>${labels[activeIndex]}</b>${rows.map(row=>`<span><i style="background:${row.color}"></i>${row.name}<strong>${row.value.toFixed(1)}Â°C</strong></span>`).join('')}`; tooltip.hidden = false; const left = Math.max(45,
+    }); ctx.restore(); tooltip.innerHTML = `<b>${labels[activeIndex]}</b>${rows.map(row=>`<span><i style="background:${row.color}"></i>${row.name}<strong>${row.value.toFixed(1)}°C</strong></span>`).join('')}`; tooltip.hidden = false; const left = Math.max(45,
     Math.min(rect.width-125,
     px+12)); tooltip.style.left = `${left}px`; tooltip.style.top = `${Math.max(4,
     Math.min(rect.height-68,
