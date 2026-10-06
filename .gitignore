@@ -24,3 +24,18 @@ Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
+
+# Python environments, databases, and generated telemetry
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+backend/data/*.sqlite3
+backend/data/*.db
+
+# CALCE source archive and derived training tables are reproducible inputs/outputs
+ml/data/raw/*
+!ml/data/raw/.gitkeep
+ml/data/processed/*
+!ml/data/processed/.gitkeep
+ml/models/*.joblib
+ml/models/metrics.json
