@@ -23,3 +23,18 @@ Thumbs.db
 Desktop.ini
 .vscode/
 .idea/
+
+# Python environments, generated databases, and temporary package downloads
+backend/.venv*/
+backend/wheelhouse/
+**/__pycache__/
+**/.pytest_cache/
+*.py[cod]
+backend/data/*.sqlite3
+backend/data/*.db
+
+# CALCE source archive and derived tables can be regenerated from the scripts
+ml/data/raw/*
+!ml/data/raw/.gitkeep
+ml/data/processed/*
+!ml/data/processed/.gitkeep

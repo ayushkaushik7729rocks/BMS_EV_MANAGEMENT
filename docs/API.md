@@ -42,7 +42,7 @@ The demo scenario routes return HTTP 409 when mock telemetry is disabled.
 
 ## Battery status response
 
-`GET /api/battery/status` extends the validated telemetry record with four-channel average/maximum temperature, thermal prediction, risk and ETA, up to 120 recent history points, current alerts, device freshness, and a demo fan output. Prediction source is one of the trained model names, `trend_baseline`, or `unavailable`.
+`GET /api/battery/status` extends the validated telemetry record with four-channel average/maximum temperature, thermal prediction, risk and ETA, up to 120 recent history points, current alerts, device freshness, and a demo fan output. Current risk and ETA use the hottest measured sensor; the ML estimate is the four-sensor average and is advisory. `COOLING_ACTIVATION_C` configures the demo fan indicator independently from the battery safety threshold. Prediction source is one of the trained model names, `trend_baseline`, or `unavailable`.
 
 ## CORS and frontend
 

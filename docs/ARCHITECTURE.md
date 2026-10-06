@@ -30,7 +30,7 @@ The mock generator and hardware ingestion use the same validated telemetry paylo
 
 ## Thermal safety behavior
 
-ML forecasts the average cell temperature approximately 10 minutes ahead. A deterministic risk service compares current/predicted temperatures with `THERMAL_THRESHOLD_C` and uses recent slope: current at/above the configured threshold is `CRITICAL`; a prediction at/above it is `HIGH`; a rising trend below it is `WARNING`; otherwise it is `NORMAL`. If the threshold is unset, status is `UNCONFIGURED` and ETA is `null`.
+ML forecasts the four-sensor average temperature approximately 10 minutes ahead. A deterministic risk service compares the hottest current sensor and the recent hottest-sensor slope with `THERMAL_THRESHOLD_C`; current hottest sensor at/above the configured threshold is `CRITICAL`, and a prediction at/above it is `HIGH`. A rising trend below it is `WARNING`; otherwise it is `NORMAL`. If the threshold is unset, status is `UNCONFIGURED` and ETA is `null`. Since the CALCE model predicts the average, its future value is an advisory signal and does not replace each cell's hardware protection.
 
 The `.env.example` default of 55 C is carried forward from the old UI's demo threshold only. It is not a validated cell limit. Replace it with the battery manufacturer's specified value before connecting hardware. The hardware BMS remains the primary protection mechanism.
 
@@ -38,5 +38,6 @@ The `.env.example` default of 55 C is carried forward from the old UI's demo thr
 
 - SQLite database: `backend/data/bms.sqlite3` by default.
 - Mock modes: `NORMAL`, `HIGH_LOAD`, `RISING_TEMPERATURE`, and `THERMAL_WARNING`.
+- `COOLING_ACTIVATION_C` controls the demo fan indicator only; it is separate from the battery thermal safety threshold.
 - CORS is limited to the localhost origins used by the documented static frontend server.
 - Prediction uses a trained CALCE model when `ml/models/thermal_predictor.joblib` exists. Before training, the API labels a simple recent-slope forecast `trend_baseline`; it does not call this ML.

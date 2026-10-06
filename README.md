@@ -1,41 +1,60 @@
-# EV Guardian AI — Frontend
+# EV Guardian AI
 
-A browser-based battery monitoring dashboard built with plain HTML, CSS, and JavaScript. The interface currently uses sample telemetry so it can be opened and edited without installing a framework or dependencies.
+Smart predictive battery monitoring software for the BMS_AI_project. The existing `frontend2` remains plain HTML, CSS, and JavaScript. FastAPI supplies telemetry and alerts; a separately trained model predicts battery temperature from CALCE cycling traces.
 
-## Project files
+## Run locally
 
-```text
-BMS_AI_project/
-├── README.md
-├── .gitignore
-└── frontend2/
-    ├── index.html   # Page structure and font/style links
-    ├── styles.css   # Layout, colors, responsive rules, and chart tooltip
-    └── app.js       # Sample telemetry, navigation, dashboard views, and chart
+Open two PowerShell terminals in the repository folder.
+
+**Terminal 1 - backend:**
+
+```powershell
+cd backend
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+python -m uvicorn app.main:app --reload
 ```
 
-## Run the website
+**Terminal 2 - existing frontend:**
 
-The quickest option is to open `frontend2/index.html` in a web browser. The dashboard does not require Node.js, npm, a build step, or a backend.
-
-For a local web server, open a terminal in this project folder and run:
-
-```bash
-python -m http.server 8000
+```powershell
+cd frontend2
+python -m http.server 5500
 ```
 
-Then visit <http://localhost:8000/frontend2/>. Stop the server with `Ctrl+C`.
+Visit `http://127.0.0.1:5500`. The dashboard requests the backend at `http://127.0.0.1:8000`; set `window.EV_GUARDIAN_API_BASE` before loading to override the API base. Interactive API docs are at `http://127.0.0.1:8000/docs`.
 
-## Customize it
+Mock telemetry is enabled by default and stored in local SQLite at `backend/data/bms.sqlite3`. The service runs without an ESP32. CALCE model training is a separate step.
 
-- Change sample battery values and alert data in `frontend2/app.js`, in the `telemetry` object.
-- Update chart history in the `observed`, `predicted`, and `labels` arrays in `frontend2/app.js`.
-- Edit the appearance and responsive layout in `frontend2/styles.css`.
-- Edit page metadata and the sidebar structure in `frontend2/index.html`.
+## CALCE model
 
-The dashboard includes Dashboard, Battery health, Thermal analysis, Alerts, and Device & system views. The chart displays observed and projected sample temperatures, with values shown when hovering over the graph.
+The official `CX2_4.zip` archive is expected at `ml/data/raw/CX2_4.zip` and is ignored by Git. With the backend virtual environment active:
 
-## Notes
+```powershell
+cd ml
+python -m src.preprocessing.prepare_data
+python -m src.training.train_model
+python -m src.evaluation.evaluate_model
+```
 
-- The displayed readings and device state are mock data for the interface preview. They are not connected to a battery controller.
-- Google Fonts are loaded from the internet. If the connection is unavailable, the browser falls back to system fonts.
+Training writes `ml/models/thermal_predictor.joblib` and measured split details/metrics to `ml/models/metrics.json`. The model and report are shareable; raw and processed source data remain untracked. See [ML pipeline](docs/ML_PIPELINE.md) for source scope, features, horizon, split method, and current results.
+
+## Tests
+
+```powershell
+cd backend
+python -m pytest
+```
+
+## Project map
+
+- `frontend2/` - preserved vanilla dashboard; telemetry comes from the API.
+- `backend/` - FastAPI, validation, SQLite persistence, mock generator, alerts, and thermal risk.
+- `ml/` - CALCE ingestion, feature building, model comparison, and inference.
+- `hardware/` - reserved for later ESP32 integration.
+- `docs/` - architecture, API, and ML pipeline notes.
+
+The model is advisory only. The hardware BMS and cell manufacturer limits remain the protection authority. Set `THERMAL_THRESHOLD_C` from the actual battery specification before using threshold-based displays or hardware actions; the example value is only a demo setting.

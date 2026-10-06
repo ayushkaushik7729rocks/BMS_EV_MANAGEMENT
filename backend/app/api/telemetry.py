@@ -86,7 +86,7 @@ def battery_status(db: Session = Depends(get_db)):
         AlertOut(id=item.id, code=item.code, severity=item.severity, title=item.title, detail=item.detail, timestamp=item.created_at, acknowledged=item.acknowledged)
         for item in recent_alerts(db, latest.device_id)
     ]
-    fan_speed = int(min(100, max(0, (max_temperature(latest) - 34) * 8)))
+    fan_speed = int(min(100, max(0, (max_temperature(latest) - settings.cooling_activation_c) * 8)))
     return BatteryStatusResponse(
         **as_response(latest).model_dump(),
         average_temperature_c=round(average_temperature(latest), 3),

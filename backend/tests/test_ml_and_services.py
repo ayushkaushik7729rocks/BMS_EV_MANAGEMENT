@@ -1,11 +1,19 @@
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from types import SimpleNamespace
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from app.core.config import Settings
 from app.services.mock_telemetry_service import MockTelemetryGenerator, SCENARIOS
 from app.services.risk_service import assess_thermal_risk, estimate_slope
 from ml.src.features.thermal_features import FEATURE_COLUMNS, TARGET_COLUMN, build_supervised_rows, latest_feature_row
 from ml.src.preprocessing.prepare_data import _run_date
+from ml.src.inference.predictor import ThermalPredictor
+
+MODEL_PATH = Path(__file__).resolve().parents[2] / "ml" / "models" / "thermal_predictor.joblib"
 
 
 def test_mock_telemetry_is_continuous_and_modes_are_available():
@@ -75,3 +83,25 @@ def test_calce_filename_dates_allow_archive_suffixes():
     assert _run_date("25degC_10times_CX2_4_01_02_13.txt") == "2013-01-02"
     assert _run_date("35degC_10times_CX2_4_10_27_11_part1.txt") == "2011-10-27"
     assert _run_date("25degC_10times_CX2_4_4_18_12_chamber_acting weird.txt") == "2012-04-18"
+
+
+@pytest.mark.skipif(not MODEL_PATH.exists(), reason="Train the optional CALCE model to exercise persisted-artifact inference")
+def test_persisted_model_predicts_from_api_style_telemetry():
+    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    history = []
+    for index in range(61):
+        value = 32.0 + index * 0.01
+        history.append(SimpleNamespace(
+            timestamp=start + timedelta(seconds=index * 5),
+            cell_1_temperature=value,
+            cell_2_temperature=value + 0.1,
+            cell_3_temperature=value - 0.1,
+            cell_4_temperature=value + 0.2,
+            voltage=3.9,
+            current=2.0,
+            power=7.8,
+        ))
+    predictor = ThermalPredictor(MODEL_PATH)
+    prediction = predictor.predict_from_rows(history)
+    assert predictor.model_name == "xgboost"
+    assert prediction is not None and np.isfinite(prediction)

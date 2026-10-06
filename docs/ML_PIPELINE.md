@@ -20,6 +20,12 @@ Whole source-file/cycle groups are sorted chronologically by the CALCE filename 
 
 The exact group counts, sample counts, date ranges, validation metrics, test metrics, and selected model are recorded in `metrics.json` after training. No metric is claimed until that command has completed.
 
+### Current run (official archive)
+
+Preparation produced 145,302 labeled rows from 120 cycling files. The chronological split kept whole file/cycle groups together: train 151 groups / 77,160 rows (2011-01-20 to 2012-07-03); validation 32 / 59,705 (2012-07-06 to 2012-10-12); test 33 / 8,437 (2012-10-12 to 2013-01-07). The held-out date boundary shares 2012-10-12 because separate CALCE files on that same date can land on either side; no file or cycle group is divided.
+
+Validation MAE / RMSE / R-squared: linear regression 1.062 C / 1.345 C / 0.933; random forest 0.908 C / 1.316 C / 0.935; XGBoost 0.895 C / 1.235 C / 0.943. XGBoost was selected by validation MAE. On the held-out test set it scored MAE 0.952 C, RMSE 1.388 C, and R-squared 0.971 (8,437 samples). These metrics describe this single-cell dataset split; they are not pack-level or safety validation.
+
 ## Inference and limits
 
 The API loads `ml/models/thermal_predictor.joblib` once and predicts from the newest shared-feature row. If no trained artifact is present, the API can provide an explicitly labeled recent-slope `trend_baseline`; this is not an ML model and must not be treated as a validated safety prediction. The training package uses single-cell CALCE CX2_4 data, so its errors do not establish pack-level performance for a 1S4P prototype.

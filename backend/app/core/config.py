@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     mock_scenario: str = "NORMAL"
     # This is only the old UI's demo value until a cell specification is supplied.
     thermal_threshold_c: float | None = 55.0
+    # Development fan output only; replace with the cooling controller's specification.
+    cooling_activation_c: float = 34.0
     model_path: Path = PROJECT_ROOT / "ml" / "models" / "thermal_predictor.joblib"
     history_limit: int = 600
 

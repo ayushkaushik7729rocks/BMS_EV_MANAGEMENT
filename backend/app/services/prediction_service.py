@@ -62,8 +62,8 @@ class PredictionService:
         samples = []
         for row in rows:
             stamp = row.timestamp if row.timestamp.tzinfo else row.timestamp.replace(tzinfo=timezone.utc)
-            samples.append(((stamp - now).total_seconds(), average_temperature(row)))
-        assessment = assess_thermal_risk(average_temperature(latest), predicted, samples, self.threshold_c)
+            samples.append(((stamp - now).total_seconds(), max_temperature(row)))
+        assessment = assess_thermal_risk(max_temperature(latest), predicted, samples, self.threshold_c)
         return predicted, source, assessment
 
 

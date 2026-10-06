@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.services.prediction_service import get_prediction_service
 from app.services.telemetry_service import get_history, max_temperature, record_alert, resolve_alerts_except
 
@@ -17,7 +18,7 @@ def update_alerts(db: Session, device_id: str) -> None:
         active.add(code)
         severity = "critical" if risk == "CRITICAL" else "warning"
         record_alert(db, device_id, code, severity, f"Thermal risk: {risk.lower()}", assessment.explanation)
-    if max_temperature(latest) > 34.0:
+    if max_temperature(latest) > get_settings().cooling_activation_c:
         active.add("cooling_active")
-        record_alert(db, device_id, "cooling_active", "info", "Cooling response active", "Temperature driven cooling response is above its demo activation point.")
+        record_alert(db, device_id, "cooling_active", "info", "Cooling response active", "Temperature is above the configured development fan activation point.")
     resolve_alerts_except(db, device_id, active)
