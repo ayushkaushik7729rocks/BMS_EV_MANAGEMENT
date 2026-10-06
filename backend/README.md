@@ -10,7 +10,7 @@ From the repository root:
 cd backend
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
@@ -19,7 +19,7 @@ Open `http://127.0.0.1:8000/docs`. Mock telemetry starts automatically and persi
 ## Tests
 
 ```powershell
-python -m pytest
+.\.venv\Scripts\python.exe -m pytest
 ```
 
 The backend and ML requirements are installed together through `requirements.txt`; the virtual environment remains under `backend/.venv` and is ignored by Git.
