@@ -1,0 +1,101 @@
+{
+  "dataset": "CALCE CX2_4 official archive; source data/*.txt; no generated rows used",
+  "target": "target_temperature_10min_c",
+  "horizon_minutes": 10,
+  "features": [
+    "temperature_c",
+    "temperature_mean_60s_c",
+    "temperature_std_60s_c",
+    "temperature_delta_60s_c",
+    "temperature_slope_c_per_min",
+    "temperature_lag_300s_c",
+    "voltage_v",
+    "current_a",
+    "power_w",
+    "current_delta_60s_a"
+  ],
+  "split_method": "chronological whole-file/cycle groups sorted by CALCE filename date; no random split; target windows do not cross Pgm cycle groups",
+  "split_group_counts": {
+    "train": 151,
+    "validation": 32,
+    "test": 33
+  },
+  "split_sample_counts": {
+    "train": 77160,
+    "validation": 59705,
+    "test": 8437
+  },
+  "date_ranges": {
+    "train": [
+      "2011-01-20",
+      "2012-07-03"
+    ],
+    "validation": [
+      "2012-07-06",
+      "2012-10-12"
+    ],
+    "test": [
+      "2012-10-12",
+      "2013-01-07"
+    ]
+  },
+  "validation_metrics": {
+    "linear_regression": {
+      "mae_c": 1.0619821992897063,
+      "rmse_c": 1.345122752784135,
+      "r2": 0.9326055926502642
+    },
+    "random_forest": {
+      "mae_c": 0.9080381885102938,
+      "rmse_c": 1.3163419753616632,
+      "r2": 0.9354587337947039
+    },
+    "xgboost": {
+      "mae_c": 0.8945062160491943,
+      "rmse_c": 1.2345852733128617,
+      "r2": 0.9432269334793091
+    }
+  },
+  "selected_model": "xgboost",
+  "test_metrics": {
+    "mae_c": 0.9519845247268677,
+    "rmse_c": 1.3878576625320678,
+    "r2": 0.9714695811271667
+  },
+  "test_group_ids": [
+    "25degC_10times_CX2_4_01_02_13.txt::cycle-2",
+    "25degC_10times_CX2_4_10_12_12.txt::cycle-2",
+    "25degC_10times_CX2_4_10_22_12.txt::cycle-2",
+    "25degC_10times_CX2_4_11_02_12.txt::cycle-1",
+    "25degC_10times_CX2_4_11_02_12.txt::cycle-2",
+    "35degC_10times_CX2_4_01_03_13.txt::cycle-2",
+    "35degC_10times_CX2_4_10_15_12.txt::cycle-1",
+    "35degC_10times_CX2_4_10_15_12.txt::cycle-2",
+    "35degC_10times_CX2_4_10_24_12.txt::cycle-2",
+    "35degC_10times_CX2_4_11_05_12.txt::cycle-1",
+    "35degC_10times_CX2_4_11_05_12.txt::cycle-2",
+    "35degC_10times_CX2_4_12_20_12.txt::cycle-1",
+    "35degC_10times_CX2_4_12_20_12.txt::cycle-2",
+    "45degC_10times_CX2_4_01_07_13.txt::cycle-1",
+    "45degC_10times_CX2_4_01_07_13.txt::cycle-2",
+    "45degC_10times_CX2_4_10_16_12.txt::cycle-1",
+    "45degC_10times_CX2_4_10_16_12.txt::cycle-2",
+    "45degC_10times_CX2_4_10_26_12.txt::cycle-1",
+    "45degC_10times_CX2_4_10_26_12.txt::cycle-2",
+    "45degC_10times_CX2_4_11_07_12.txt::cycle-1",
+    "45degC_10times_CX2_4_11_07_12.txt::cycle-2",
+    "45degC_10times_CX2_4_12_21_12.txt::cycle-1",
+    "45degC_10times_CX2_4_12_21_12.txt::cycle-2",
+    "55degC_10times_CX2_4_10_19_12.txt::cycle-1",
+    "55degC_10times_CX2_4_10_19_12.txt::cycle-2",
+    "55degC_10times_CX2_4_10_31_12.txt::cycle-1",
+    "55degC_10times_CX2_4_10_31_12.txt::cycle-2",
+    "55degC_10times_CX2_4_11_09_12.txt::cycle-1",
+    "55degC_10times_CX2_4_11_09_12.txt::cycle-2",
+    "55degC_10times_CX2_4_11_12_12.txt::cycle-1",
+    "55degC_10times_CX2_4_11_12_12.txt::cycle-2",
+    "55degC_10times_CX2_4_12_27_12.txt::cycle-1",
+    "55degC_10times_CX2_4_12_27_12.txt::cycle-2"
+  ],
+  "artifact": "ml\\models\\thermal_predictor.joblib"
+}
