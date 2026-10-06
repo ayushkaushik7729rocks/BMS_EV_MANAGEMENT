@@ -2136,6 +2136,164 @@ button {
 
 }
 
+/* Battery health marker shared by the dashboard car and thermal car view. */
+.health-healthy { --battery-color: #4bd2a4; }
+.health-watch { --battery-color: #efb261; }
+.health-critical { --battery-color: #ee716b; }
+.greeting-model { position: relative; }
+.battery-position-marker {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 66%;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  color: var(--battery-color, #4bd2a4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px #07100d);
+}
+.battery-position-icon {
+  width: 32px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--battery-color) 32%, #09110f);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--battery-color) 55%, transparent);
+  font-size: 15px;
+  line-height: 1;
+}
+.battery-position-label {
+  border-radius: 10px;
+  padding: 3px 6px;
+  color: #eaf4f0;
+  background: color-mix(in srgb, var(--battery-color) 42%, #10171d);
+  font: 700 8px 'DM Mono', monospace;
+  letter-spacing: .35px;
+  white-space: nowrap;
+}
+.battery-position-pulse {
+  position: absolute;
+  top: 0;
+  width: 32px;
+  height: 22px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  animation: battery-position-pulse 2.2s ease-out infinite;
+}
+.thermal-car-panel { margin-bottom: 13px; overflow: hidden; }
+.thermal-car-stage {
+  height: clamp(250px, 31vw, 390px);
+  margin: 12px 0 8px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #26353b;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at 50% 50%, #1b2b30 0%, #11191e 58%, #0e151a 100%);
+}
+.thermal-car-stage model-viewer {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  --poster-color: transparent;
+  --progress-bar-color: var(--battery-color);
+  --progress-mask: #10171d;
+}
+.thermal-car-stage .battery-position-marker {
+  top: 64%;
+  transform: translate(-50%, -50%) scale(1.28);
+}
+.thermal-car-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 5px 9px;
+  border: 1px solid #324047;
+  border-radius: 12px;
+  color: #9aabad;
+  background: #0b1216cc;
+  font: 8px 'DM Mono', monospace;
+  letter-spacing: .8px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.health-band-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--battery-color) 38%, transparent);
+  border-radius: 20px;
+  color: var(--battery-color);
+  background: color-mix(in srgb, var(--battery-color) 9%, transparent);
+  font: 9px 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.health-band-badge i,
+.battery-health-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--battery-color);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--battery-color) 60%, transparent);
+}
+.battery-health-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 21px;
+  padding-top: 10px;
+  border-top: 1px solid #232e34;
+  color: #a2afb0;
+  font-size: 10px;
+}
+.battery-health-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.battery-health-legend b { color: #748489; font: 9px 'DM Mono', monospace; }
+.battery-health-legend .legend-good { background: #4bd2a4; }
+.battery-health-legend .legend-watch { background: #efb261; }
+.battery-health-legend .legend-critical { background: #ee716b; }
+.backend-wait {
+  max-width: 680px;
+  margin: clamp(24px, 7vh, 72px) auto;
+  padding: 30px;
+}
+.backend-wait p,
+.empty-state {
+  color: #91a0a9;
+  line-height: 1.65;
+}
+.backend-wait .outline-button { margin-top: 8px; }
+.ack-button {
+  flex: 0 0 auto;
+  border: 1px solid #33554b;
+  border-radius: 12px;
+  padding: 5px 8px;
+  background: #14231f;
+  color: #83d7b7;
+  font-size: 8px;
+  cursor: pointer;
+}
+.ack-button:hover { background: #1b332b; }
+.empty-state { padding: 16px 2px; font-size: 10px; }
+@keyframes battery-position-pulse {
+  0% { transform: scale(.9); opacity: .75; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+@media (min-width: 1440px) {
+  .page-content { max-width: 1740px; padding-left: 46px; padding-right: 46px; }
+}
+@media (max-width: 560px) {
+  .thermal-car-stage { height: 255px; }
+  .thermal-car-stage .battery-position-marker { top: 63%; transform: translate(-50%, -50%) scale(1.05); }
+  .health-band-badge { font-size: 8px; padding: 5px 7px; }
+  .battery-health-legend { justify-content: space-between; gap: 8px; font-size: 9px; }
+  .battery-health-legend b { font-size: 8px; }
+}
+
 /* Small additions for the plain HTML navigation and canvas chart. */
 .nav-icon {
   flex: 0 0 17px!important;

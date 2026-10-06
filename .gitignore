@@ -3,7 +3,6 @@ node_modules/
 dist/
 build/
 .vite/
-ml/data
 
 # Local environment and secrets
 .env
@@ -25,17 +24,17 @@ Desktop.ini
 .vscode/
 .idea/
 
-# Python environments, databases, and generated telemetry
-backend/.venv/
+# Python environments, generated databases, and temporary package downloads
+backend/.venv*/
+backend/wheelhouse/
 **/__pycache__/
+**/.pytest_cache/
 *.py[cod]
 backend/data/*.sqlite3
 backend/data/*.db
 
-# CALCE source archive and derived training tables are reproducible inputs/outputs
+# CALCE source archive and derived tables can be regenerated from the scripts
 ml/data/raw/*
 !ml/data/raw/.gitkeep
 ml/data/processed/*
 !ml/data/processed/.gitkeep
-ml/models/*.joblib
-ml/models/metrics.json
