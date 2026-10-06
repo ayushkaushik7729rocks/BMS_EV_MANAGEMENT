@@ -3,6 +3,7 @@ node_modules/
 dist/
 build/
 .vite/
+ml/data
 
 # Local environment and secrets
 .env
