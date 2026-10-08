@@ -1,23 +1,16 @@
-# ESP32 integration (next step)
+# ESP32 hardware integration
 
-Physical hardware is intentionally not connected in this software milestone. The backend is prepared to receive one validated JSON telemetry object per HTTP POST at `http://<backend-host>:8000/api/telemetry`.
+The firmware in [`esp32_ev_guardian.ino`](esp32_ev_guardian.ino) matches the FastAPI telemetry contract used by the existing dashboard. It posts one hardware record every five seconds to `POST /api/telemetry`; the backend persists it and the frontend reads the resulting `/api/battery/status` response.
 
-```json
-{
-  "device_id": "EVG-001",
-  "timestamp": "2026-10-06T10:00:00Z",
-  "voltage": 3.91,
-  "current": 4.2,
-  "soc": 76.0,
-  "temperatures": {
-    "cell_1": 36.2,
-    "cell_2": 36.8,
-    "cell_3": 37.1,
-    "cell_4": 38.4
-  }
-}
-```
+## Start here
 
-`power` is optional and computed from voltage times current when omitted. `soh` is optional because no validated SOH estimator is implemented. The development mock is enabled by default; disable it with `MOCK_TELEMETRY_ENABLED=false` before connecting an ESP32. A fresh hardware sample already suppresses mock writes for the same device. Keep the physical BMS protections authoritative; the software model and demo fan output are advisory only.
+Follow [`ESP32_SETUP.md`](ESP32_SETUP.md) for the pin map, wiring, libraries, backend configuration, upload steps, and safe bring-up. The sketch assumes a protected **1S4P** 18650 demonstration pack and a LAN-reachable backend.
 
-The example CORS list permits only localhost development origins. If the ESP32 communicates directly from a browser origin (normally it should communicate with the API over HTTP itself), configure only the exact required frontend origin in `CORS_ORIGINS`.
+## Important interface boundaries
+
+- Four DS18B20 temperature values are required by the backend; the sketch skips a POST if any sensor is missing or invalid.
+- The INA219 provides **pack-level** voltage and current. It does not measure individual cell voltages.
+- SOC is approximate coulomb counting with an editable starting SOC and nominal pack capacity.
+- This backend receives telemetry over HTTP. It does not receive MQTT from this sketch.
+- The backend's thermal prediction is advisory. This firmware does not claim validated SOH, RUL, or failure-probability estimates.
+- The fan, buzzer, and auxiliary relay are demonstration outputs. The relay is not wired as a battery contactor. Keep certified pack protection independent and authoritative.
