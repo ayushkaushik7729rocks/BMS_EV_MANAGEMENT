@@ -1,7 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -19,7 +19,9 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
     ]
     device_id: str = "EVG-001"
-    mock_telemetry_enabled: bool = True
+    device_auth_enabled: bool = True
+    device_token: SecretStr | None = None
+    mock_telemetry_enabled: bool = False
     mock_interval_seconds: float = 5.0
     mock_auto_cycle: bool = True
     mock_scenario_seconds: int = 60

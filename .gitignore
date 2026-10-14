@@ -32,6 +32,8 @@ backend/wheelhouse/
 *.py[cod]
 backend/data/*.sqlite3
 backend/data/*.db
+hardware/esp32_smoke_test/secrets.h
+hardware/esp32_smoke_test/server_root_ca.h
 
 # CALCE source archive and derived tables can be regenerated from the scripts
 ml/data/raw/*

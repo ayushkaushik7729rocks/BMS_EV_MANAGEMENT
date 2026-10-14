@@ -1,12 +1,12 @@
 # API reference
 
-Default local base URL: `http://127.0.0.1:8000`.
+Default local base URL: `http://127.0.0.1:8000`. Production HTTPS requires the separately configured reverse proxy described in `../hardware/README.md`; the FastAPI app does not terminate TLS itself.
 
 Interactive docs are available at `/docs` while the server is running.
 
 ## Telemetry contract
 
-`POST /api/telemetry` accepts one `TelemetryPayload`; Pydantic validates and persists it. The same schema is used for request parsing and database conversion.
+`POST /api/telemetry` accepts one `TelemetryPayload`; Pydantic validates and persists it. The route requires `Authorization: Bearer <EV_GUARDIAN_DEVICE_TOKEN>` by default. Missing and invalid credentials return 401. Health remains public.
 
 ```json
 {
@@ -21,7 +21,7 @@ Interactive docs are available at `/docs` while the server is running.
 }
 ```
 
-`power` and `soh` are optional. Power is calculated as voltage times current if omitted. SOH is optional because the ESP32 cannot provide a validated SOH estimate unless a separate estimator is implemented. The four cell temperatures are required. `source` defaults to `hardware`; the development simulator uses `mock` and also supplies a scenario name.
+`power` and `soh` are optional. Power is calculated as voltage times current if omitted. SOH is optional because the ESP32 cannot provide a validated SOH estimate unless a separate estimator is implemented. The four cell temperatures are required. `source` defaults to `hardware`; backend demo samples use `mock`, and sensor-free connectivity samples must explicitly use `test`. Source labels are descriptive rather than cryptographic attestation. The current default configuration disables the mock generator.
 
 ## Routes
 
@@ -44,6 +44,8 @@ The demo scenario routes return HTTP 409 when mock telemetry is disabled.
 
 `GET /api/battery/status` extends the validated telemetry record with four-channel average/maximum temperature, thermal prediction, risk and ETA, up to 120 recent history points, current alerts, device freshness, and a demo fan output. Current risk and ETA use the hottest measured sensor; the ML estimate is the four-sensor average and is advisory. `COOLING_ACTIVATION_C` configures the demo fan indicator independently from the battery safety threshold. Prediction source is one of the trained model names, `trend_baseline`, or `unavailable`.
 
-## CORS and frontend
+## CORS, authentication, and frontend
 
-Serve `frontend2/` at `http://localhost:5500` or `http://127.0.0.1:5500`. Those origins are the development defaults. Direct `file://` opening does not work for cross-origin API fetches. Configure additional exact origins through `CORS_ORIGINS`; avoid wildcard origins in deployment.
+Serve `frontend2/` at `http://localhost:5500` or `http://127.0.0.1:5500`. Those origins are the development defaults. Direct `file://` opening does not work for cross-origin API fetches. Configure additional exact origins through `CORS_ORIGINS`; avoid wildcard origins in deployment. For LAN dashboards, use the backend host's LAN address as `window.EV_GUARDIAN_API_BASE` (or update the existing `API_BASE` default), and add the exact frontend origin. Browsers block HTTPS pages that fetch an HTTP API as mixed content. Configure HTTPS for both through the Caddy deployment before remote/LAN production use.
+
+Generate a strong token with `python -c "import secrets; print(secrets.token_urlsafe(32))"` and set it as `EV_GUARDIAN_DEVICE_TOKEN` in the private backend environment. With `DEVICE_AUTH_ENABLED=true`, the backend refuses startup if the token is missing or shorter than 32 characters. Disabling device auth is only suitable for isolated loopback development; it must not be used on a network interface.

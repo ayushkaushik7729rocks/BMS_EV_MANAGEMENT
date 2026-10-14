@@ -1,0 +1,6 @@
+# Set EV_GUARDIAN_DOMAIN in the Caddy process environment to a public DNS name
+# whose A/AAAA records point to this server. Caddy obtains and renews a trusted
+# certificate automatically when public DNS and inbound ports 80/443 are ready.
+{$EV_GUARDIAN_DOMAIN} {
+	reverse_proxy 127.0.0.1:8000
+}

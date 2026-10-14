@@ -15,6 +15,13 @@ def create_app(settings: Settings | None = None, initialize_database: bool = Tru
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        if config.device_auth_enabled:
+            token = config.device_token.get_secret_value() if config.device_token else ""
+            if len(token) < 32:
+                raise RuntimeError(
+                    "EV_GUARDIAN_DEVICE_TOKEN must be configured with at least 32 characters "
+                    "when DEVICE_AUTH_ENABLED is true."
+                )
         if initialize_database:
             create_tables()
         task = None
@@ -33,6 +40,7 @@ def create_app(settings: Settings | None = None, initialize_database: bool = Tru
                     pass
 
     application = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
+    application.state.settings = config
     application.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.core.security import require_device_token
 from app.database.database import get_db
 from app.schemas.telemetry import (
     AlertOut,
@@ -39,7 +40,7 @@ def as_response(row) -> TelemetryResponse:
     )
 
 
-@router.post("/telemetry", response_model=TelemetryResponse, status_code=201)
+@router.post("/telemetry", response_model=TelemetryResponse, status_code=201, dependencies=[Depends(require_device_token)])
 def ingest_telemetry(payload: TelemetryPayload, db: Session = Depends(get_db)):
     row = save_telemetry(db, payload)
     update_alerts(db, payload.device_id)

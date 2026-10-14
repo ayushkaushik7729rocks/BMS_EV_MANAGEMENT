@@ -32,7 +32,7 @@ class TelemetryPayload(BaseModel):
     soc: float = Field(ge=0, le=100, allow_inf_nan=False)
     soh: float | None = Field(default=None, ge=0, le=100, allow_inf_nan=False)
     temperatures: CellTemperatures
-    source: Literal["hardware", "mock"] = "hardware"
+    source: Literal["hardware", "mock", "test"] = "hardware"
     scenario: ScenarioName | None = None
 
     @field_validator("timestamp")
@@ -78,7 +78,7 @@ class TelemetryResponse(BaseModel):
     soc: float
     soh: float | None
     temperatures: CellTemperatures
-    source: Literal["hardware", "mock"]
+    source: Literal["hardware", "mock", "test"]
     scenario: ScenarioName | None
 
 

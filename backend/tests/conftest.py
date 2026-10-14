@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import secrets
 
 import pytest
 from fastapi.testclient import TestClient
@@ -10,6 +11,8 @@ from app.database.database import Base, get_db
 from app.main import create_app
 from app.core.config import Settings
 from app.services.prediction_service import reset_prediction_service
+
+TEST_DEVICE_TOKEN = secrets.token_urlsafe(32)
 
 
 @pytest.fixture
@@ -24,7 +27,7 @@ def db_session_factory():
 
 @pytest.fixture
 def client(db_session_factory):
-    app = create_app(Settings(mock_telemetry_enabled=False), initialize_database=False)
+    app = create_app(Settings(_env_file=None, mock_telemetry_enabled=False, device_token=TEST_DEVICE_TOKEN), initialize_database=False)
 
     def override_db():
         db = db_session_factory()
@@ -50,6 +53,11 @@ def telemetry_payload():
         "soc": 75.0,
         "temperatures": {"cell_1": 30.0, "cell_2": 31.0, "cell_3": 32.0, "cell_4": 33.0},
     }
+
+
+@pytest.fixture
+def auth_headers():
+    return {"Authorization": f"Bearer {TEST_DEVICE_TOKEN}"}
 
 
 def insert_series(db_session_factory, count: int = 85, interval_seconds: int = 5):
