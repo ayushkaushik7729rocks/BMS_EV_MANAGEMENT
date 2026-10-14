@@ -45,7 +45,7 @@ Send to `https://<hostname>/api/telemetry` with `Content-Type: application/json`
 
 ## Sensor-free ESP32 smoke test
 
-The sketch in `esp32_smoke_test/` uses fixed sample values for connectivity/validation only and labels every POST `source: "test"`. Compile and upload only after configuring the local ignored headers and deploying the HTTPS endpoint. It verifies Wi-Fi, trusted HTTPS certificate validation, bearer authentication, JSON validation, HTTP status handling, and bounded retry. A successful 201 confirms ingestion; it is not a sensor measurement. Mock telemetry may remain disabled during this test.
+The sketch in `esp32_smoke_test/` uses fixed sample values for connectivity/validation only and labels every POST `source: "test"`. Compile and upload only after configuring the local ignored headers and deploying the HTTPS endpoint. It obtains UTC time with NTP before TLS validation, uses the configured trusted root CA, and has connect/response timeouts plus bounded Wi-Fi/network retry. It also verifies bearer authentication, JSON validation, and HTTP status handling. A successful 201 confirms ingestion; it is not a sensor measurement. Mock telemetry may remain disabled during this test.
 
 For the API/database check before uploading firmware, start the local backend on `127.0.0.1`, then from PowerShell in the repository root run:
 

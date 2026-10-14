@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <cstring>
+#include <time.h>
 
 #include "secrets.h"
 #include "server_root_ca.h"
@@ -13,23 +14,46 @@ static const char *TEST_PAYLOAD =
 
 static constexpr unsigned long SUCCESS_INTERVAL_MS = 30000;
 static constexpr unsigned long MAX_BACKOFF_MS = 300000;
+static constexpr unsigned long WIFI_CONNECT_TIMEOUT_MS = 20000;
+static constexpr unsigned long CLOCK_SYNC_TIMEOUT_MS = 15000;
+static constexpr unsigned long HTTP_CONNECT_TIMEOUT_MS = 8000;
+static constexpr unsigned long HTTP_RESPONSE_TIMEOUT_MS = 10000;
+static constexpr time_t MIN_VALID_EPOCH = 1704067200;  // 2024-01-01 UTC
 static unsigned long nextAttemptAt = 0;
 static unsigned long retryDelayMs = 2000;
 static bool stoppedOnClientError = false;
+static bool clockReady = false;
 
 static bool hasConfiguredInputs() {
   return strlen(WIFI_SSID) > 0 && strlen(WIFI_PASSWORD) > 0 &&
          strlen(EVG_DEVICE_TOKEN) >= 32 && strlen(EVG_API_URL) > 8 &&
          strlen(SERVER_ROOT_CA) > 100 && String(EVG_API_URL).startsWith("https://") &&
          strcmp(WIFI_SSID, "YOUR_WIFI_NAME") != 0 &&
+         strcmp(WIFI_PASSWORD, "YOUR_WIFI_PASSWORD") != 0 &&
          strcmp(EVG_DEVICE_TOKEN, "REPLACE_WITH_GENERATED_32_PLUS_CHARACTER_TOKEN") != 0 &&
          String(EVG_API_URL).indexOf("YOUR_") < 0 &&
          strstr(SERVER_ROOT_CA, "REPLACE_WITH") == nullptr;
 }
 
+static bool retryIsDue() {
+  return static_cast<long>(millis() - nextAttemptAt) >= 0;
+}
+
 static void scheduleRetry() {
   nextAttemptAt = millis() + retryDelayMs;
   retryDelayMs = min(retryDelayMs * 2, MAX_BACKOFF_MS);
+}
+
+static bool synchronizeClock() {
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+  const unsigned long deadline = millis() + CLOCK_SYNC_TIMEOUT_MS;
+  while (static_cast<long>(millis() - deadline) < 0) {
+    if (time(nullptr) >= MIN_VALID_EPOCH) {
+      return true;
+    }
+    delay(250);
+  }
+  return time(nullptr) >= MIN_VALID_EPOCH;
 }
 
 void setup() {
@@ -44,14 +68,24 @@ void setup() {
   WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.println("Connecting to Wi-Fi...");
-  while (WiFi.status() != WL_CONNECTED) {
+  const unsigned long wifiDeadline = millis() + WIFI_CONNECT_TIMEOUT_MS;
+  while (WiFi.status() != WL_CONNECTED && static_cast<long>(millis() - wifiDeadline) < 0) {
     delay(500);
   }
-  Serial.println("Wi-Fi connected. This sketch sends explicitly simulated TEST telemetry only.");
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Wi-Fi connected. This sketch sends explicitly simulated TEST telemetry only.");
+  } else {
+    Serial.println("Wi-Fi connection timed out; bounded reconnect attempts will continue.");
+    scheduleRetry();
+  }
 }
 
 void loop() {
   if (stoppedOnClientError) {
+    delay(100);
+    return;
+  }
+  if (!retryIsDue()) {
     delay(100);
     return;
   }
@@ -62,14 +96,22 @@ void loop() {
     delay(100);
     return;
   }
-  if (static_cast<long>(millis() - nextAttemptAt) < 0) {
-    delay(100);
-    return;
+  if (!clockReady) {
+    if (!synchronizeClock()) {
+      Serial.println("NTP time sync failed; HTTPS certificate checks will not be bypassed.");
+      scheduleRetry();
+      return;
+    }
+    clockReady = true;
+    retryDelayMs = 2000;
+    Serial.println("Clock synchronized for TLS certificate validation.");
   }
 
   WiFiClientSecure tlsClient;
   tlsClient.setCACert(SERVER_ROOT_CA);  // Certificate verification remains enabled.
   HTTPClient http;
+  http.setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS);
+  http.setTimeout(HTTP_RESPONSE_TIMEOUT_MS);
   if (!http.begin(tlsClient, EVG_API_URL)) {
     Serial.println("HTTPS setup failed; retrying with bounded backoff.");
     scheduleRetry();

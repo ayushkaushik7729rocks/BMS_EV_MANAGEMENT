@@ -103,6 +103,37 @@ def test_auth_enabled_without_token_fails_on_startup():
             pass
 
 
+def test_settings_loads_device_token_from_environment(monkeypatch):
+    monkeypatch.setenv("EV_GUARDIAN_DEVICE_TOKEN", TEST_DEVICE_TOKEN)
+    settings = Settings(_env_file=None)
+    assert settings.device_token is not None
+    assert settings.device_token.get_secret_value() == TEST_DEVICE_TOKEN
+
+
+def test_settings_accepts_comma_separated_cors_origins_from_environment(monkeypatch):
+    expected = ["http://localhost:5500", "http://127.0.0.1:5500"]
+    monkeypatch.setenv("CORS_ORIGINS", ",".join(expected))
+    settings = Settings(_env_file=None)
+    assert settings.cors_origins == expected
+
+
+def test_settings_accepts_json_cors_origins_from_environment(monkeypatch):
+    expected = ["http://localhost:5500", "https://dashboard.example.test"]
+    monkeypatch.setenv("CORS_ORIGINS", ' ["http://localhost:5500", "https://dashboard.example.test"] ')
+    settings = Settings(_env_file=None)
+    assert settings.cors_origins == expected
+
+
+def test_auth_enabled_with_short_token_fails_on_startup():
+    app = create_app(
+        Settings(_env_file=None, mock_telemetry_enabled=False, device_token="too-short"),
+        initialize_database=False,
+    )
+    with pytest.raises(RuntimeError, match="EV_GUARDIAN_DEVICE_TOKEN"):
+        with TestClient(app):
+            pass
+
+
 def test_invalid_telemetry_is_rejected_with_auth(client, telemetry_payload, auth_headers):
     telemetry_payload["soc"] = 101
     response = client.post("/api/telemetry", json=telemetry_payload, headers=auth_headers)

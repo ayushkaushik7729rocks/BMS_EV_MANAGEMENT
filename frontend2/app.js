@@ -95,10 +95,15 @@ function updateChartData() {
 async function refreshTelemetry() {
   try {
     const response = await fetch(`${API_BASE}/api/battery/status`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Backend returned HTTP ${response.status}`);
-    telemetry = normalizeStatus(await response.json());
     apiOnline = true;
-    apiError = null;
+    if (response.status === 503) {
+      telemetry = null;
+      apiError = 'The API is reachable and is waiting for the first telemetry sample.';
+    } else {
+      if (!response.ok) throw new Error(`Backend returned HTTP ${response.status}`);
+      telemetry = normalizeStatus(await response.json());
+      apiError = null;
+    }
   } catch (error) {
     apiOnline = false;
     apiError = error.message || 'Could not reach the backend';
@@ -123,7 +128,7 @@ const heading = (eyebrow, title, text) => `<div class="page-heading detail-headi
 const metric = (icon, label, value, unit, note, color = '') => `<article class="metric-card"><div class="metric-icon ${color}">${icon}</div><div class="metric-label">${label}</div><div class="metric-value">${value}<small>${unit}</small></div><div class="metric-note">${note}</div></article>`;
 const chart = '<div class="chart-wrap"><canvas id="temperature-chart" aria-label="Observed and projected battery temperature chart"></canvas><div class="chart-tooltip" hidden></div></div>';
 const legend = () => `<div class="chart-legend"><span><i class="legend-observed"></i>Observed average</span><span><i class="legend-predicted"></i>10 min estimate</span>${Number.isFinite(telemetry?.threshold) ? '<span class="legend-limit"><i></i>Configured limit</span>' : ''}</div>`;
-const footer = () => `<footer class="page-footer"><span>EV GUARDIAN AI &middot; SMART PREDICTIVE BMS</span><span><i class="footer-live"></i> ${apiOnline ? `${telemetry.source.toUpperCase()} DATA` : 'API OFFLINE'} &middot; ${apiError ? 'UPDATE FAILED' : 'LIVE'}</span></footer>`;
+const footer = () => `<footer class="page-footer"><span>EV GUARDIAN AI &middot; SMART PREDICTIVE BMS</span><span><i class="footer-live"></i> ${apiOnline ? (telemetry ? `${telemetry.source.toUpperCase()} DATA` : 'API ONLINE') : 'API OFFLINE'} &middot; ${apiOnline ? (telemetry ? (apiError ? 'UPDATE FAILED' : 'LIVE') : 'WAITING FOR TELEMETRY') : 'UPDATE FAILED'}</span></footer>`;
 
 function batteryHealthBand(soh) {
   if (!Number.isFinite(soh)) return { key: 'unknown', label: 'Not measured', color: '#94a3a8' };
@@ -296,7 +301,7 @@ function render(page = currentPage, preserveScroll = false) {
   document.querySelector('#crumb').textContent = titles[page] || titles.dashboard;
   const content = document.querySelector('#page-content');
   if (!telemetry) {
-    content.innerHTML = `<section class="panel backend-wait"><div class="panel-title">${apiError ? 'Backend connection needed' : 'Connecting to EV Guardian AI'}</div><p>${escapeHtml(apiError || 'Waiting for a telemetry sample from the local API.')}</p><p>Start the FastAPI backend; its development mock supplies telemetry when no ESP32 is connected.</p><button class="outline-button" data-refresh>Retry connection</button></section>${footer()}`;
+    content.innerHTML = `<section class="panel backend-wait"><div class="panel-title">${apiOnline ? 'Waiting for telemetry' : (apiError ? 'Backend connection needed' : 'Connecting to EV Guardian AI')}</div><p>${escapeHtml(apiError || 'Waiting for a telemetry sample from the local API.')}</p><p>${apiOnline ? 'The API is reachable. Submit a clearly labeled test sample or connect the ESP32 to populate the dashboard.' : 'Start the FastAPI backend, then retry the connection.'}</p><button class="outline-button" data-refresh>Retry connection</button></section>${footer()}`;
   } else {
     content.innerHTML = `${page === 'dashboard' ? dashboard() : detail(page)}${footer()}`;
     if (page === 'dashboard' || page === 'thermal') requestAnimationFrame(drawChart);
